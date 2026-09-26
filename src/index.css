@@ -1,0 +1,213 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import '@fontsource/orbitron/400.css';
+@import '@fontsource/orbitron/700.css';
+@import '@fontsource/orbitron/900.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+
+@layer base {
+  :root {
+    --color-bg: #0a0a1a;
+    --color-surface: #1a1a2e;
+    --color-surface-alt: #252542;
+    --color-primary: #8a2be2;
+    --color-secondary: #e6e6fa;
+    --color-accent: #ff69b4;
+    --color-text: #ffffff;
+    --color-text-muted: #b0b0c0;
+    --color-glow: #ff4500;
+  }
+
+  * {
+    @apply border-surfaceAlt/20;
+  }
+
+  html {
+    @apply scroll-smooth;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  body {
+    @apply bg-bg text-text antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  ::selection {
+    @apply bg-primary/30 text-text;
+  }
+
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-bg;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surfaceAlt rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/50;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer components {
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out forwards;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-pulse-slow {
+    animation: pulseSlow 3s ease-in-out infinite;
+  }
+
+  @keyframes pulseSlow {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, var(--color-text) 0%, var(--color-primary) 50%, var(--color-accent) 100%);
+  }
+
+  .glass {
+    @apply bg-surface/80 backdrop-blur-xl border border-surfaceAlt/40;
+  }
+
+  .glass-strong {
+    @apply bg-surface/90 backdrop-blur-2xl border border-surfaceAlt/60;
+  }
+}
+
+@layer utilities {
+  .fluid-type-xs {
+    font-size: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  }
+  .fluid-type-sm {
+    font-size: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  }
+  .fluid-type-base {
+    font-size: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  }
+  .fluid-type-lg {
+    font-size: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  }
+  .fluid-type-xl {
+    font-size: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  }
+  .fluid-type-2xl {
+    font-size: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
+  }
+  .fluid-type-3xl {
+    font-size: clamp(1.875rem, 1.5rem + 1.875vw, 2.5rem);
+  }
+  .fluid-type-4xl {
+    font-size: clamp(2.25rem, 1.75rem + 2.5vw, 3.5rem);
+  }
+  .fluid-type-5xl {
+    font-size: clamp(3rem, 2rem + 5vw, 5rem);
+  }
+  .fluid-type-6xl {
+    font-size: clamp(3.75rem, 2.5rem + 6.25vw, 7rem);
+  }
+  .fluid-type-7xl {
+    font-size: clamp(4.5rem, 3rem + 7.5vw, 9rem);
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .perspective-2000 {
+    perspective: 2000px;
+  }
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-bg;
+}
+
+/* Skip link for keyboard navigation */
+.skip-link {
+  @apply absolute -top-10 left-4 z-50 px-4 py-2 bg-glow text-white rounded-lg transition-all;
+}
+
+.skip-link:focus {
+  @apply top-4;
+}
+
+/* Reduced motion media query */
+@media (prefers-reduced-motion: reduce) {
+  .motion-reduce\:hidden {
+    display: none;
+  }
+  
+  .motion-reduce\:static {
+    position: static !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-primary: #a855f7;
+    --color-accent: #f472b6;
+    --color-glow: #fb923c;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

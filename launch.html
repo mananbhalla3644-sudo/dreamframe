@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DREAMFRAME Launcher</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #0a0a1a;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+    .logo {
+      font-family: 'Orbitron', system-ui, sans-serif;
+      font-size: clamp(3rem, 8vw, 5rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff 0%, #8a2be2 50%, #ff69b4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+    }
+    .tagline {
+      color: #b0b0c0;
+      font-size: 1.25rem;
+      margin-bottom: 3rem;
+    }
+    .status-card {
+      background: rgba(26, 26, 46, 0.8);
+      border: 1px solid rgba(37, 37, 66, 0.6);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(20px);
+    }
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #666;
+      transition: background 0.3s;
+    }
+    .status-dot.running { background: #22c55e; box-shadow: 0 0 12px #22c55e; }
+    .status-dot.stopped { background: #ef4444; box-shadow: 0 0 12px #ef4444; }
+    .status-text { font-weight: 500; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+      margin: 0.5rem;
+    }
+    .btn-primary {
+      background: #ff4500;
+      color: #fff;
+    }
+    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-2px); }
+    .btn-secondary {
+      background: transparent;
+      color: #fff;
+      border: 1px solid rgba(138, 43, 226, 0.5);
+    }
+    .btn-secondary:hover { background: rgba(138, 43, 226, 0.1); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .commands {
+      text-align: left;
+      background: rgba(10, 10, 26, 0.8);
+      border: 1px solid rgba(37, 37, 66, 0.4);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.875rem;
+      overflow-x: auto;
+      margin-top: 2rem;
+    }
+    .cmd { color: #8a2be2; }
+    .arg { color: #e6e6fa; }
+    .comment { color: #666; }
+    .tiers {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .tier-card {
+      padding: 1rem;
+      border-radius: 0.75rem;
+      background: rgba(26, 26, 46, 0.6);
+      border: 1px solid rgba(37, 37, 66, 0.4);
+    }
+    .tier-name { font-weight: 700; margin-bottom: 0.5rem; }
+    .tier-ultra { color: #fbbf24; }
+    .tier-balanced { color: #8a2be2; }
+    .tier-lite { color: #22c55e; }
+    .tier-static { color: #b0b0c0; }
+    .tier-desc { font-size: 0.75rem; color: #888; }
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(138, 43, 226, 0.3);
+      border-top-color: #8a2be2;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-left: 0.5rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">DREAMFRAME</div>
+    <p class="tagline">Turn a sentence into a world</p>
+
+    <div class="status-card">
+      <div class="status-indicator">
+        <div id="statusDot" class="status-dot"></div>
+        <span id="statusText" class="status-text">Checking dev server...</span>
+        <div id="spinner" class="spinner hidden"></div>
+      </div>
+      <div id="serverInfo"></div>
+    </div>
+
+    <div>
+      <a id="launchBtn" class="btn btn-primary" href="http://localhost:5173" target="_blank" disabled>
+        Launch DREAMFRAME
+      </a>
+      <a id="buildBtn" class="btn btn-secondary" href="http://localhost:5173?build=true" target="_blank" disabled>
+        Open Production Build
+      </a>
+    </div>
+
+    <div class="tiers">
+      <div class="tier-card">
+        <div class="tier-name tier-ultra">ULTRA</div>
+        <div class="tier-desc">High-end desktop • 50k particles • Full post-FX</div>
+      </div>
+      <div class="tier-card">
+        <div class="tier-name tier-balanced">BALANCED</div>
+        <div class="tier-desc">Typical laptop • 15k particles • Bloom + Noise</div>
+      </div>
+      <div class="tier-card">
+        <div class="tier-name tier-lite">LITE</div>
+        <div class="tier-desc">Mobile • 3k particles • Hero scene only</div>
+      </div>
+      <div class="tier-card">
+        <div class="tier-name tier-static">STATIC</div>
+        <div class="tier-desc">Reduced motion • No WebGL • Poster fallback</div>
+      </div>
+    </div>
+
+    <div class="commands">
+      <span class="comment"># Start development server</span><br>
+      <span class="cmd">npm</span> <span class="arg">run dev</span><br><br>
+      <span class="comment"># Build for production</span><br>
+      <span class="cmd">npm</span> <span class="arg">run build</span><br><br>
+      <span class="comment"># Preview production build</span><br>
+      <span class="cmd">npm</span> <span class="arg">run preview</span><br><br>
+      <span class="comment"># Force performance tier</span><br>
+      <span class="cmd">http://localhost:5173</span><span class="arg">?tier=ultra|balanced|lite|static</span>
+    </div>
+  </div>
+
+  <script>
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const spinner = document.getElementById('spinner');
+    const launchBtn = document.getElementById('launchBtn');
+    const buildBtn = document.getElementById('buildBtn');
+    const serverInfo = document.getElementById('serverInfo');
+
+    const DEV_URL = 'http://localhost:5173';
+    const CHECK_INTERVAL = 2000;
+
+    async function checkServer() {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+        
+        const response = await fetch(DEV_URL, { 
+          method: 'HEAD',
+          mode: 'no-cors',
+          signal: controller.signal 
+        });
+        clearTimeout(timeout);
+        
+        // no-cors means we can't read response, but no error = server running
+        setStatus('running', 'Dev server is running');
+        enableButtons();
+      } catch (e) {
+        if (e.name === 'AbortError' || e.name === 'TimeoutError') {
+          setStatus('stopped', 'Dev server not responding (timeout)');
+        } else if (e.message.includes('Failed to fetch') || e.message.includes('CORS')) {
+          // CORS error or network error usually means server is running but blocking
+          setStatus('running', 'Dev server detected (CORS limited)');
+          enableButtons();
+        } else {
+          setStatus('stopped', 'Dev server not running');
+        }
+        disableButtons();
+      }
+    }
+
+    function setStatus(state, message) {
+      statusDot.className = 'status-dot ' + state;
+      statusText.textContent = message;
+      spinner.classList.add('hidden');
+    }
+
+    function enableButtons() {
+      launchBtn.disabled = false;
+      launchBtn.href = DEV_URL;
+      buildBtn.disabled = false;
+      buildBtn.href = DEV_URL + '?tier=ultra';
+    }
+
+    function disableButtons() {
+      launchBtn.disabled = true;
+      launchBtn.removeAttribute('href');
+      buildBtn.disabled = true;
+      buildBtn.removeAttribute('href');
+    }
+
+    function startChecking() {
+      spinner.classList.remove('hidden');
+      checkServer();
+      setInterval(checkServer, CHECK_INTERVAL);
+    }
+
+    // Try to open dev server on load
+    window.addEventListener('load', () => {
+      startChecking();
+      
+      // Also try to open automatically
+      const testWindow = window.open(DEV_URL, '_blank');
+      if (testWindow) {
+        testWindow.close();
+      }
+    });
+
+    // Keyboard shortcut: Enter to launch
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !launchBtn.disabled) {
+        window.open(DEV_URL, '_blank');
+      }
+    });
+  </script>
+</body>
+</html>
